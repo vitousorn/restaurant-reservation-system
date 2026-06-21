@@ -1,0 +1,48 @@
+services:
+  api-gateway:
+    build: ./api-gateway
+    ports:
+      - "5000:5000"
+    env_file:
+      - ./api-gateway/.env
+    depends_on:
+      - auth-service
+      - user-service
+      - restaurant-service
+      - table-service
+      - reservation-service
+
+  auth-service:
+    build: ./auth-service
+    ports:
+      - "5001:5001"
+    env_file:
+      - ./auth-service/.env
+
+  user-service:
+    build: ./user-service
+    ports:
+      - "5002:5002"
+    env_file:
+      - ./user-service/.env
+
+  restaurant-service:
+    build: ./restaurant-service
+    ports:
+      - "5003:5003"
+    env_file:
+      - ./restaurant-service/.env
+
+  table-service:
+    build: ./table-service
+    ports:
+      - "5004:5004"
+    env_file:
+      - ./table-service/.env
+
+  reservation-service:
+    build: ./reservation-service
+    ports:
+      - "5005:5005"
+    env_file:
+      - ./reservation-service/.env
