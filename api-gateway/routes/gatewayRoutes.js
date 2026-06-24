@@ -1,35 +1,35 @@
 const express = require("express");
 const { createProxyMiddleware } = require("http-proxy-middleware");
+const axios = require("axios");
 
 const verifyToken = require("../middleware/authMiddleware");
+const { getTarget } = require("../loadBalancer");
 
 const router = express.Router();
 
 /*
 =========================================
 AUTH SERVICE
-No token required
+Load balanced — no token required
 =========================================
 */
 
-// router.use(
-//     "/auth",
-//     createProxyMiddleware({
-//         target: process.env.AUTH_SERVICE,
-//         changeOrigin: true
-//     })
-// );
-
-router.use(
-    "/auth",
-    createProxyMiddleware({
-        target: process.env.AUTH_SERVICE,
-        changeOrigin: true,
-        pathRewrite: (path, req) => {
-            return "/api/auth" + path;
-        }
-    })
-);
+router.use("/auth", async (req, res) => {
+  try {
+    const target = getTarget("auth");
+    const url = `${target}/api/auth${req.path}`;
+    const response = await axios({
+      method: req.method,
+      url,
+      data: req.body,
+      headers: { authorization: req.headers.authorization },
+    });
+    res.status(response.status).json(response.data);
+  } catch (err) {
+    const status = err.response?.status || 500;
+    res.status(status).json(err.response?.data || { message: "Gateway error" });
+  }
+});
 
 /*
 =========================================
