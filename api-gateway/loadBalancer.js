@@ -1,7 +1,6 @@
 const targets = {
   auth: [
     process.env.AUTH_SERVICE_1,
-    process.env.AUTH_SERVICE_2,
   ].filter(Boolean),
   user: [process.env.USER_SERVICE],
   restaurant: [process.env.RESTAURANT_SERVICE],
